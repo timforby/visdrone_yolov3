@@ -1,0 +1,6 @@
+classes= 11
+train=data/visdrone/train.txt
+valid=data/visdrone/val.txt
+names=data/visdrone.names
+backup=backup/
+eval=visdrone

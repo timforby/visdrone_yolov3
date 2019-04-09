@@ -1,6 +1,6 @@
 dist
 output
-data
+data/samples
 backup
 weights/*.weights
 checkpoints
