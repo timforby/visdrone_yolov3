@@ -15,6 +15,17 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
+class Interpolate(nn.Module):
+    def __init__(self, scale_factor):
+        super(Interpolate, self).__init__()
+        self.interp = nn.functional.interpolate
+        self.sf = scale_factor
+        
+    def forward(self, x):
+        x = self.interp(x, scale_factor=self.sf)
+        return x
+    
+
 
 def create_modules(module_defs):
     """
@@ -61,7 +72,7 @@ def create_modules(module_defs):
             modules.add_module("maxpool_%d" % i, maxpool)
 
         elif module_def["type"] == "upsample":
-            upsample = nn.Upsample(scale_factor=int(module_def["stride"]), mode="nearest")
+            upsample = Interpolate(scale_factor=int(module_def["stride"]))
             modules.add_module("upsample_%d" % i, upsample)
 
         elif module_def["type"] == "route":
@@ -111,8 +122,8 @@ class YOLOLayer(nn.Module):
         self.ignore_thres = 0.5
         self.lambda_coord = 1
 
-        self.mse_loss = nn.MSELoss(size_average=True)  # Coordinate loss
-        self.bce_loss = nn.BCELoss(size_average=True)  # Confidence loss
+        self.mse_loss = nn.MSELoss()  # Coordinate loss
+        self.bce_loss = nn.BCELoss()  # Confidence loss
         self.ce_loss = nn.CrossEntropyLoss()  # Class loss
 
     def forward(self, x, targets=None):

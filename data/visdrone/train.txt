@@ -5817,4 +5817,3 @@
 ../rs_visdrone_data/VisDrone2018-DET-train/images/9999998_00159_d_0000134.jpg
 ../rs_visdrone_data/VisDrone2018-DET-train/images/9999998_00160_d_0000135.jpg
 ../rs_visdrone_data/VisDrone2018-DET-train/images/9999998_00161_d_0000136.jpg
-../rs_visdrone_data/VisDrone2018-DET-train/images/mean.txt

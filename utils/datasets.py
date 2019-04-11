@@ -79,7 +79,7 @@ class ListDataset(Dataset):
         input_img = np.pad(img, pad, 'constant', constant_values=128) / 255.
         padded_h, padded_w, _ = input_img.shape
         # Resize and normalize
-        input_img = resize(input_img, (*self.img_shape, 3), mode='reflect')
+        input_img = resize(input_img, (*self.img_shape, 3), mode='reflect', anti_aliasing=False)
         # Channels-first
         input_img = np.transpose(input_img, (2, 0, 1))
         # As pytorch tensor
@@ -98,6 +98,8 @@ class ListDataset(Dataset):
             labels[:,1:5] = labels[:,0:4]
             labels[:,0] = labels[:,5]
             labels = labels[:,:5]
+            labels = labels[labels[:,0]!=0,:]#remove 0 category
+            labels[:,0] = labels[:,0]-1
             # Extract coordinates for unpadded + unscaled image
             x1 = (labels[:, 1] - labels[:, 3]/2)
             y1 = (labels[:, 2] - labels[:, 4]/2)
@@ -112,6 +114,16 @@ class ListDataset(Dataset):
                 y1 = h * (labels[:, 2] - labels[:, 4]/2)
                 x2 = w * (labels[:, 1] + labels[:, 3]/2)
                 y2 = h * (labels[:, 2] + labels[:, 4]/2)
+                # Adjust for added padding
+                x1 += pad[1][0]
+                y1 += pad[0][0]
+                x2 += pad[1][0]
+                y2 += pad[0][0]
+                # Calculate ratios from coordinates
+                labels[:, 1] = ((x1 + x2) / 2) / padded_w
+                labels[:, 2] = ((y1 + y2) / 2) / padded_h
+                labels[:, 3] *= w / padded_w
+                labels[:, 4] *= h / padded_h
             """
 
 
@@ -123,12 +135,14 @@ class ListDataset(Dataset):
             # Calculate ratios from coordinates
             labels[:, 1] = ((x1 + x2) / 2) / padded_w
             labels[:, 2] = ((y1 + y2) / 2) / padded_h
-            labels[:, 3] *= w / padded_w
-            labels[:, 4] *= h / padded_h
+            labels[:, 3] = padded_w
+            labels[:, 4] = padded_h
         # Fill matrix
         filled_labels = np.zeros((self.max_objects, 5))
         if labels is not None:
             filled_labels[range(len(labels))[:self.max_objects]] = labels[:self.max_objects]
+        if not (filled_labels >= 0).all():
+            print("error")
         filled_labels = torch.from_numpy(filled_labels)
 
         return img_path, input_img, filled_labels
