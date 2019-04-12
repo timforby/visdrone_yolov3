@@ -102,5 +102,5 @@ for epoch in range(opt.epochs):
 
         model.seen += imgs.size(0)
 
-    if epoch % opt.checkpoint_interval == 0:
+    if epoch % opt.checkpoint_interval == 0  or epoch == opt.epochs-1:
         model.save_weights("%s/%d.weights" % (opt.checkpoint_dir, epoch))
