@@ -135,8 +135,8 @@ class ListDataset(Dataset):
             # Calculate ratios from coordinates
             labels[:, 1] = ((x1 + x2) / 2) / padded_w
             labels[:, 2] = ((y1 + y2) / 2) / padded_h
-            labels[:, 3] = padded_w
-            labels[:, 4] = padded_h
+            labels[:, 3] /= padded_w
+            labels[:, 4] /= padded_h
         # Fill matrix
         filled_labels = np.zeros((self.max_objects, 5))
         if labels is not None:
@@ -145,7 +145,7 @@ class ListDataset(Dataset):
             print("error")
         filled_labels = torch.from_numpy(filled_labels)
 
-        return img_path, input_img, filled_labels
+        return img_path, input_img.cuda().float(), filled_labels.cuda().float()
 
     def __len__(self):
         return len(self.img_files)

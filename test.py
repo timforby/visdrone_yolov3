@@ -54,16 +54,12 @@ model.eval()
 dataset = ListDataset(test_path)
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.n_cpu)
 
-Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
-
 print("Compute mAP...")
 
 all_detections = []
 all_annotations = []
 
 for batch_i, (_, imgs, targets) in enumerate(tqdm.tqdm(dataloader, desc="Detecting objects")):
-
-    imgs = Variable(imgs.type(Tensor))
 
     with torch.no_grad():
         outputs = model(imgs)
