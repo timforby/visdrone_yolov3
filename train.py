@@ -76,7 +76,7 @@ for epoch in range(opt.epochs):
     for batch_i, (_, imgs, targets) in enumerate(dataloader):
         optimizer.zero_grad()
 
-        loss = model(imgs, targets)
+        loss = model(imgs.cuda(), targets.cuda())
 
         loss.backward()
         optimizer.step()

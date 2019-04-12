@@ -145,7 +145,7 @@ class ListDataset(Dataset):
             print("error")
         filled_labels = torch.from_numpy(filled_labels)
 
-        return img_path, input_img.cuda().float(), filled_labels.cuda().float()
+        return img_path, input_img.float(), filled_labels.float()
 
     def __len__(self):
         return len(self.img_files)

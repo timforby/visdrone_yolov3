@@ -60,6 +60,7 @@ all_detections = []
 all_annotations = []
 
 for batch_i, (_, imgs, targets) in enumerate(tqdm.tqdm(dataloader, desc="Detecting objects")):
+    imgs = imgs.cuda()
 
     with torch.no_grad():
         outputs = model(imgs)
