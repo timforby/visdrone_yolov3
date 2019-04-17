@@ -2,6 +2,7 @@ from __future__ import division
 
 from models import *
 from utils.utils import *
+from utils.utils import save_img
 from utils.datasets import *
 from utils.parse_config import *
 
@@ -73,7 +74,7 @@ dataloader = torch.utils.data.DataLoader(
 optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()))
 
 for epoch in range(opt.epochs):
-    for batch_i, (_, imgs, targets) in enumerate(dataloader):
+    for batch_i, (paths, imgs, targets) in enumerate(dataloader):
         optimizer.zero_grad()
 
         loss = model(imgs.cuda(), targets.cuda())
@@ -99,8 +100,18 @@ for epoch in range(opt.epochs):
                 model.losses["precision"],
             )
         )
-
+        
         model.seen += imgs.size(0)
+
+    if epoch % 2 == 0:
+        with torch.no_grad():
+            model.eval()
+            outputs = model(imgs.cuda())
+            model.train()
+            outputs = non_max_suppression(outputs, int(data_config['classes']), conf_thres=opt.conf_thres, nms_thres=opt.nms_thres)
+        for img_i, (img_path, detections) in enumerate(zip(paths, outputs)):
+           save_img(img_path, detections, classes, "output", str(img_i)+"_"+str(epoch), opt)
+
 
     if epoch % opt.checkpoint_interval == 0  or epoch == opt.epochs-1:
         model.save_weights("%s/%d.weights" % (opt.checkpoint_dir, epoch))

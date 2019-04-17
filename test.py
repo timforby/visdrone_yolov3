@@ -20,10 +20,10 @@ from torch.autograd import Variable
 import torch.optim as optim
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--batch_size", type=int, default=2, help="size of each image batch")
+parser.add_argument("--batch_size", type=int, default=16, help="size of each image batch")
 parser.add_argument("--model_config_path", type=str, default="config/yolov3.cfg", help="path to model config file")
 parser.add_argument("--data_config_path", type=str, default="config/visdrone.data", help="path to data config file")
-parser.add_argument("--weights_path", type=str, default="checkpoints/6.weights", help="path to weights file")
+parser.add_argument("--weights_path", type=str, default="checkpoints/29.weights", help="path to weights file")
 parser.add_argument("--class_path", type=str, default="data/visdrone.names", help="path to class label file")
 parser.add_argument("--iou_thres", type=float, default=0.5, help="iou threshold required to qualify as detected")
 parser.add_argument("--conf_thres", type=float, default=0.5, help="object confidence threshold")
