@@ -71,10 +71,12 @@ dataloader = torch.utils.data.DataLoader(
     ListDataset(train_path), batch_size=opt.batch_size, shuffle=False, num_workers=opt.n_cpu
 )
 
-optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()))
+optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr = learning_rate/2, amsgrad=True)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 50)
 
 for epoch in range(opt.epochs):
     for batch_i, (paths, imgs, targets) in enumerate(dataloader):
+        scheduler.step()
         optimizer.zero_grad()
 
         loss = model(imgs.cuda(), targets.cuda())
