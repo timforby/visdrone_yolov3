@@ -22,12 +22,12 @@ from matplotlib.ticker import NullLocator
 parser = argparse.ArgumentParser()
 parser.add_argument('--image_folder', type=str, default='data/samples', help='path to dataset')
 parser.add_argument('--config_path', type=str, default='config/yolov3.cfg', help='path to model config file')
-parser.add_argument('--weights_path', type=str, default='weights/yolov3.weights', help='path to weights file')
-parser.add_argument('--class_path', type=str, default='data/coco.names', help='path to class label file')
+parser.add_argument('--weights_path', type=str, default='checkpoints/29.weights', help='path to weights file')
+parser.add_argument('--class_path', type=str, default='data/visdrone.names', help='path to class label file')
 parser.add_argument('--conf_thres', type=float, default=0.8, help='object confidence threshold')
 parser.add_argument('--nms_thres', type=float, default=0.4, help='iou thresshold for non-maximum suppression')
-parser.add_argument('--batch_size', type=int, default=1, help='size of the batches')
-parser.add_argument('--n_cpu', type=int, default=8, help='number of cpu threads to use during batch generation')
+parser.add_argument('--batch_size', type=int, default=8, help='size of the batches')
+parser.add_argument('--n_cpu', type=int, default=0, help='number of cpu threads to use during batch generation')
 parser.add_argument('--img_size', type=int, default=416, help='size of each image dimension')
 parser.add_argument('--use_cuda', type=bool, default=True, help='whether to use cuda if available')
 opt = parser.parse_args()
@@ -35,7 +35,7 @@ print(opt)
 
 cuda = torch.cuda.is_available() and opt.use_cuda
 
-os.makedirs('output', exist_ok=True)
+os.makedirs('output_detect', exist_ok=True)
 
 # Set up model
 model = Darknet(opt.config_path, img_size=opt.img_size)
@@ -65,7 +65,7 @@ for batch_i, (img_paths, input_imgs) in enumerate(dataloader):
     # Get detections
     with torch.no_grad():
         detections = model(input_imgs)
-        detections = non_max_suppression(detections, 80, opt.conf_thres, opt.nms_thres)
+        detections = non_max_suppression(detections, len(classes), opt.conf_thres, opt.nms_thres)
 
 
     # Log progress
@@ -124,12 +124,12 @@ for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
             # Add the bbox to the plot
             ax.add_patch(bbox)
             # Add label
-            plt.text(x1, y1, s=classes[int(cls_pred)], color='white', verticalalignment='top',
-                    bbox={'color': color, 'pad': 0})
+            #plt.text(x1, y1, s=classes[int(cls_pred)], color='white', verticalalignment='top',
+            #        bbox={'color': color, 'pad': 0})
 
     # Save generated image with detections
     plt.axis('off')
     plt.gca().xaxis.set_major_locator(NullLocator())
     plt.gca().yaxis.set_major_locator(NullLocator())
-    plt.savefig('output/%d.png' % (img_i), bbox_inches='tight', pad_inches=0.0)
+    plt.savefig('output_detect/%d.png' % (img_i), bbox_inches='tight', pad_inches=0.0)
     plt.close()

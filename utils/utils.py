@@ -284,7 +284,7 @@ def save_img(img_path, detections, classes, output_dir, name, opt):
         bbox_colors = random.sample(colors, n_cls_preds)
         for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
 
-            print ('\t+ Label: %s, Conf: %.5f' % (classes[int(cls_pred)], cls_conf.item()))
+            #print ('\t+ Label: %s, Conf: %.5f' % (classes[int(cls_pred)], cls_conf.item()))
 
             # Rescale coordinates to original dimensions
             box_h = ((y2 - y1) / unpad_h) * img.shape[0]
@@ -305,7 +305,7 @@ def save_img(img_path, detections, classes, output_dir, name, opt):
 
     # Save generated image with detections
     plt.axis('off')
-    #plt.gca().xaxis.set_major_locator('')
-    #plt.gca().yaxis.set_major_locator('')
+    plt.gca().xaxis.set_major_locator(NullLocator())
+    plt.gca().yaxis.set_major_locator(NullLocator())
     plt.savefig(output_dir + "/" + name, bbox_inches='tight', pad_inches=0.0)
     plt.close()

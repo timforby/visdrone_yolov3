@@ -207,11 +207,10 @@ class YOLOLayer(nn.Module):
             loss_y = self.mse_loss(y[mask], ty[mask])
             loss_w = self.mse_loss(w[mask], tw[mask])
             loss_h = self.mse_loss(h[mask], th[mask])
-            loss_conf = self.bce_loss(pred_conf[conf_mask_false], tconf[conf_mask_false]) + self.bce_loss(
-                pred_conf[conf_mask_true], tconf[conf_mask_true]
-            )
-            loss_cls = (1 / nB) * self.ce_loss(pred_cls[mask], torch.argmax(tcls[mask], 1))
-            loss = loss_x + loss_y + loss_w + loss_h + loss_conf + loss_cls
+            loss_conf_false = self.bce_loss(pred_conf[conf_mask_false], tconf[conf_mask_false])
+            loss_conf_true = self.bce_loss(pred_conf[conf_mask_true], tconf[conf_mask_true])
+            loss_cls = self.ce_loss(pred_cls[mask], torch.argmax(tcls[mask], 1))
+            loss = loss_x + loss_y + loss_w + loss_h + loss_conf_false + loss_conf_true + loss_cls
 
             return (
                 loss,
@@ -219,7 +218,7 @@ class YOLOLayer(nn.Module):
                 loss_y.item(),
                 loss_w.item(),
                 loss_h.item(),
-                loss_conf.item(),
+                (loss_conf_false + loss_conf_true).item(),
                 loss_cls.item(),
                 recall,
                 precision,
