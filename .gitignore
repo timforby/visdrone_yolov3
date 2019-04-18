@@ -117,3 +117,4 @@ venv.bak/
 # results
 /tests
 /output_detect
+/output_old

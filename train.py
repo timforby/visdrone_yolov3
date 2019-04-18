@@ -20,8 +20,8 @@ from torch.autograd import Variable
 import torch.optim as optim
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--epochs", type=int, default=30, help="number of epochs")
-parser.add_argument("--batch_size", type=int, default=8, help="size of each image batch")
+parser.add_argument("--epochs", type=int, default=30000, help="number of epochs")
+parser.add_argument("--batch_size", type=int, default=12, help="size of each image batch")
 parser.add_argument("--model_config_path", type=str, default="config/yolov3.cfg", help="path to model config file")
 parser.add_argument("--data_config_path", type=str, default="config/visdrone.data", help="path to data config file")
 parser.add_argument("--weights_path", type=str, default="weights/yolov3.weights", help="path to weights file")
@@ -103,14 +103,14 @@ for epoch in range(opt.epochs):
         
         model.seen += imgs.size(0)
 
-    if epoch % 2 == 0:
+    if epoch % 5 == 0:
         with torch.no_grad():
             model.eval()
             outputs = model(imgs.cuda())
             model.train()
             outputs = non_max_suppression(outputs, int(data_config['classes']), conf_thres=opt.conf_thres, nms_thres=opt.nms_thres)
         for img_i, (img_path, detections) in enumerate(zip(paths, outputs)):
-           save_img(img_path, detections, classes, "output", str(img_i)+"_"+str(epoch), opt)
+           save_img(img_path, detections, classes, "output", str(epoch)+"_"+str(img_i), opt)
 
 
     if epoch % opt.checkpoint_interval == 0  or epoch == opt.epochs-1:
