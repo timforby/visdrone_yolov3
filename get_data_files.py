@@ -12,15 +12,19 @@ print(opt)
 
 
 print(opt.image_folder_path)
-image_names = []
+
 for (dir_path, dir_names, file_names) in os.walk(opt.image_folder_path):
     break
+image_names = ['/'.join([dir_path,fn]) for fn in file_names]
+for d in dir_names:
+    for (d_p, d_n, f_n) in os.walk(dir_path+"/"+d):
+        break
+    image_names += ['/'.join([dir_path,d_p,fn]) for fn in f_n]
 
 os.makedirs("data/"+opt.dataset_name, exist_ok=True)
 f = open("data/"+opt.dataset_name+"/"+opt.dataset_type+".txt", "w")
-for fn in file_names:
-    if '.png' in fn or '.jpg' in fn:
-        path = '/'.join([opt.image_folder_path,fn])
+for path in image_names:
+    if '.png' in path or '.jpg' in path:
         if opt.add_dimensions:
             img = cv2.imread(path)
             f.write(path+','+str(img.shape[0])+','+str(img.shape[1])+','+str(img.shape[2])+'\n')
