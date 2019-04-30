@@ -137,15 +137,20 @@ class ListDataset(Dataset):
             labels[:, 2] = ((y1 + y2) / 2) / padded_h
             labels[:, 3] /= padded_w
             labels[:, 4] /= padded_h
-        # Fill matrix
-        filled_labels = np.zeros((self.max_objects, 5))
-        if labels is not None:
-            filled_labels[range(len(labels))[:self.max_objects]] = labels[:self.max_objects]
-        if not (filled_labels >= 0).all():
-            print("error")
-        filled_labels = torch.from_numpy(filled_labels)
 
-        return img_path, input_img.float(), filled_labels.float()
+        boxes = torch.zeros((len(labels),6))
+        boxes[:, 1:] = torch.from_numpy(labels)
+
+        return img_path, input_img.float(), boxes.float()
+
+    @staticmethod
+    def collate_fn(batch):
+        paths, imgs, labels = list(zip(*batch))
+        for i, boxes in enumerate(labels):
+            boxes[:, 0] = i
+        imgs = torch.stack(imgs,0)
+        labels = torch.cat(labels, 0)
+        return paths, imgs, labels
 
     def __len__(self):
         return len(self.img_files)

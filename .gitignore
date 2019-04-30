@@ -118,3 +118,4 @@ venv.bak/
 /tests
 /output_detect
 /output_old
+/checkpoints_old
