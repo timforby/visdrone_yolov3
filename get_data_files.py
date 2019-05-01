@@ -19,10 +19,10 @@ image_names = ['/'.join([dir_path,fn]) for fn in file_names]
 for d in dir_names:
     for (d_p, d_n, f_n) in os.walk(dir_path+"/"+d):
         break
-    image_names += ['/'.join([dir_path,d_p,fn]) for fn in f_n]
+    image_names += ['/'.join([d_p,fn]) for fn in f_n]
 
-os.makedirs("data/"+opt.dataset_name, exist_ok=True)
-f = open("data/"+opt.dataset_name+"/"+opt.dataset_type+".txt", "w")
+os.makedirs("../visdrone_synthetic/data/"+opt.dataset_name, exist_ok=True)
+f = open("../visdrone_synthetic/data/"+opt.dataset_name+"/"+opt.dataset_type+".txt", "w")
 for path in image_names:
     if '.png' in path or '.jpg' in path:
         if opt.add_dimensions:
