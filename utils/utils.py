@@ -53,10 +53,10 @@ def rescale_boxes(boxes, current_dim, original_shape):
 
 def xywh2xyxy(x):
     y = x.new(x.shape)
-    y[..., 0] = x[..., 0] - x[..., 2] / 2
-    y[..., 1] = x[..., 1] - x[..., 3] / 2
-    y[..., 2] = x[..., 0] + x[..., 2] / 2
-    y[..., 3] = x[..., 1] + x[..., 3] / 2
+    y[..., 0] = x[..., 0]
+    y[..., 1] = x[..., 1]
+    y[..., 2] = x[..., 0] + x[..., 2]
+    y[..., 3] = x[..., 1] + x[..., 3]
     return y
 
 
